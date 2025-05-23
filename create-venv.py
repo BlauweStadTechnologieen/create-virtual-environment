@@ -110,9 +110,11 @@ def create_venv() -> None:
         BASE_DIR = "C:\\Users\\toddg\\OneDrive\\test"
 
         if not BASE_DIR:
+            
             raise KeyError("Base Directory not specified")
         
         if not os.path.exists(BASE_DIR):
+            
             raise FileNotFoundError(f"A base directory {BASE_DIR} is specified, but does not exist.")
          
         for package in os.listdir(BASE_DIR):
@@ -120,6 +122,7 @@ def create_venv() -> None:
             cwd = os.path.join(BASE_DIR, package) 
 
             if not os.path.isdir(cwd):
+                
                 raise FileNotFoundError(f"{cwd} is not a, existing directory")
                 
             venv_path = os.path.join(cwd, ".venv")
@@ -138,9 +141,7 @@ def create_venv() -> None:
                 
                 print(f"{package.title()} already has a Virtual Environment installed. Now installing dependencies...")
 
-                install_dependancies(venv_path, cwd)
-
-                create_env(cwd)
+            create_env(cwd)
             
         return
     
