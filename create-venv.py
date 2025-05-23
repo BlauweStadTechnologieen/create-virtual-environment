@@ -107,7 +107,7 @@ def create_venv() -> None:
     """
     try:
     
-        BASE_DIR = "C:\\Users\\toddg\\OneDrive\\test"
+        BASE_DIR = "E:\\packages"
 
         if not BASE_DIR:
             
@@ -140,8 +140,6 @@ def create_venv() -> None:
             else:
                 
                 print(f"{package.title()} already has a Virtual Environment installed.")
-
-            print("Now the .env file will be created if one does not exist")
 
             create_env(cwd)
             
