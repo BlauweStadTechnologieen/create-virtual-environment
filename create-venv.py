@@ -1,5 +1,6 @@
 import os
 import subprocess
+import env_vars
 
 def run_command(cmd: str, cwd:str) -> None:
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
@@ -77,9 +78,16 @@ def create_env(cwd: str) -> None:
         return
 
     try:
+        
         with open(env_file, "w") as f:
-            
+                        
             f.write("# Environment variables\n")
+
+            print(f"Creating keys & values in {env_file}...")
+            
+            for key, value in env_vars.env_vars.items():
+                
+                f.write(f"{key}={value}\n")
 
         print(f".env file created in {cwd}")
 
@@ -132,7 +140,7 @@ def create_venv() -> None:
 
                 install_dependancies(venv_path, cwd)
 
-            create_env(cwd)
+                create_env(cwd)
             
         return
     
