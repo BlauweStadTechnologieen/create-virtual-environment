@@ -139,7 +139,9 @@ def create_venv() -> None:
 
             else:
                 
-                print(f"{package.title()} already has a Virtual Environment installed. Now installing dependencies...")
+                print(f"{package.title()} already has a Virtual Environment installed.")
+
+            print("Now the .env file will be created if one does not exist")
 
             create_env(cwd)
             
