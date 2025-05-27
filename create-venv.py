@@ -81,11 +81,11 @@ def create_env(cwd: str) -> None:
         
         with open(env_file, "w") as f:
                         
-            f.write("# Environment variables\n")
+            f.write("# Environment variables\n# These are mandatory for the application to run\n\nhello@bluecitycapital.com")
 
             print(f"Creating keys & values in {env_file}...")
             
-            for key, value in env_vars.env_vars.items():
+            for key, value in env_vars.prepopulated_env_vars.items():
                 
                 f.write(f"{key}={value}\n")
 
@@ -99,6 +99,8 @@ def create_env(cwd: str) -> None:
 
 
 def create_venv() -> None:
+    
+    
     """
     Scans all subdirectories in a specified base directory and creates a Python virtual environment (.venv)
     in each subdirectory that does not already have one. If a virtual environment already exists, it installs
