@@ -58,7 +58,7 @@ def create_env(cwd: str) -> None:
         
         print(f".env file already exists in {cwd}")
         
-        return
+        #return
 
     try:
         
@@ -140,6 +140,12 @@ def create_venv() -> None:
 
         custom_message = f"{e}"
 
+        print(custom_message)
+
+    except SyntaxError as e:
+        
+        custom_message = f"Syntax Error {e}"
+        
         print(custom_message)
 
     except Exception as e:
