@@ -1,6 +1,7 @@
 import os
 import subprocess
 import env_vars
+from extract_to import EXTRACT_TO
 
 def run_command(cmd: str, cwd:str) -> None:
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
@@ -90,7 +91,7 @@ def create_venv() -> None:
     """
     try:
     
-        BASE_DIR = "E:\\packages"
+        BASE_DIR = EXTRACT_TO
 
         if not BASE_DIR:
             
