@@ -5,54 +5,37 @@ import env_vars
 def run_command(cmd: str, cwd:str) -> None:
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
 
-def install_dependancies(venv_path: str, cwd: str) -> None:
+def create_gitignore(cwd: str) -> None:
     """
-    Installs Python dependencies from a requirements.txt file into the specified virtual environment.
-    Dot notation: create_venv.install_dependancies(venv_path, cwd)
-    Args: 
-        venv_path (str): Path to the virtual environment directory.
-        cwd (str): Current working directory where requirements.txt is expected.
-    Raises:
-        FileNotFoundError: If the requirements.txt file is not found in the specified directory.
-        Exception: If pip install command fails.
+    Creates a '.gitignore' file in the specified current working directory (cwd).
+    This file is used to specify files and directories that should be ignored by Git.
+    Args:
+        cwd (str): The current working directory where the '.gitignore' file should be created.
     Returns:
         None
+    Notes:
+        - If the '.gitignore' file already exists, the function returns without making changes.
+        - If an exception occurs during file creation, it prints a custom error message.
     """
     
-    venv_python = os.path.join(venv_path, "Scripts", "python.exe")
-    
-    requirements_file = os.path.join(cwd, "requirements.txt")
+    gitignore_file = os.path.join(cwd, ".gitignore")
+
+    if os.path.exists(gitignore_file):
+        
+        print(f".gitignore file already exists in {cwd}")
+        
+        return
 
     try:
-    
-        if os.path.exists(requirements_file):
-            
-            print(f"Installing requirements from {requirements_file}...")
-            
-            install_reqs = run_command([venv_python, "-m", "pip", "install", "-r", requirements_file], cwd)
-
-            if install_reqs.returncode != 0:
-
-                raise Exception(install_reqs.returncode, install_reqs.stderr)
-            
-            else:
-
-                print(f"Requirements installed successfully")
-
-                return
         
-        else:
+        with open(gitignore_file, "w") as f:
             
-            raise FileNotFoundError(f"Requirements file {requirements_file} not found in {cwd}")
-
-    except FileNotFoundError as e:
+            f.write(".venv/\n__pycache__/\n*.pyc\n*.pyo\n*.pyd\n.env\n")
         
-        custom_message = f"{e.__class__.__name__} {e}"
-
-        print(custom_message)
+        print(f".gitignore file created in {cwd}")
 
     except Exception as e:
-        
+
         custom_message = f"{e.__class__.__name__} {e}"
 
         print(custom_message)
@@ -81,13 +64,13 @@ def create_env(cwd: str) -> None:
         
         with open(env_file, "w") as f:
                         
-            f.write("# Environment variables\n# These are mandatory for the application to run\n\nhello@bluecitycapital.com")
+            f.write("# Environment variables\n# These are mandatory for the application to run\n# Contact Support: hello@bluecitycapital.com\n\n")
 
             print(f"Creating keys & values in {env_file}...")
             
             for key, value in env_vars.prepopulated_env_vars.items():
                 
-                f.write(f"{key}={value}\n")
+                f.write(f"{key}='{value}'\n")
 
         print(f".env file created in {cwd}")
 
@@ -97,9 +80,7 @@ def create_env(cwd: str) -> None:
 
         print(custom_message)
 
-
 def create_venv() -> None:
-    
     
     """
     Scans all subdirectories in a specified base directory and creates a Python virtual environment (.venv)
@@ -144,6 +125,8 @@ def create_venv() -> None:
                 print(f"{package.title()} already has a Virtual Environment installed.")
 
             create_env(cwd)
+
+            create_gitignore(cwd)
             
         return
     
