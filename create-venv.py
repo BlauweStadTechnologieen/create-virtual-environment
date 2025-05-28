@@ -6,6 +6,37 @@ from extract_to import EXTRACT_TO
 def run_command(cmd: str, cwd:str) -> None:
     return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
 
+def get_extract_to() -> str:
+    """
+    Retrieves the base directory where packages are extracted.
+    Returns:
+        str: The base directory path.
+    Raises:
+        KeyError: If the EXTRACT_TO constant is not defined.
+        FileNotFoundError: If the specified base directory does not exist.
+    """
+    
+    try:
+        if not EXTRACT_TO:
+            raise KeyError("You must define a directory where all software packages will be extracted to.")
+        
+        if not os.path.exists(EXTRACT_TO):
+            raise FileNotFoundError(f"Base Directory {EXTRACT_TO} does not exist.")
+        
+        return EXTRACT_TO
+        
+    except FileNotFoundError as e:
+        
+        print(f"Base Directory not found: {e}")
+        
+        return None
+
+    except KeyError as e:
+        
+        print(f"Base Directory not specified: {e}")
+
+        return None    
+
 def create_gitignore(cwd: str) -> None:
     """
     Creates a '.gitignore' file in the specified current working directory (cwd).
@@ -89,17 +120,14 @@ def create_venv() -> None:
     dependencies from requirements.txt if present. Handles errors for missing base directory, missing subdirectories,
     and command failures, and prints status messages for each subdirectory.
     """
-    try:
-    
-        BASE_DIR = EXTRACT_TO
 
-        if not BASE_DIR:
+    try:
+
+        BASE_DIR = get_extract_to()
+    
+        if BASE_DIR is None: 
             
-            raise KeyError("Base Directory not specified")
-        
-        if not os.path.exists(BASE_DIR):
-            
-            raise FileNotFoundError(f"A base directory {BASE_DIR} is specified, but does not exist.")
+            return None
          
         for package in os.listdir(BASE_DIR):
 
