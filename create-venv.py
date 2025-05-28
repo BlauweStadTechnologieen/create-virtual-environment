@@ -58,7 +58,7 @@ def create_env(cwd: str) -> None:
         
         print(f".env file already exists in {cwd}")
         
-        #return
+        return
 
     try:
         
