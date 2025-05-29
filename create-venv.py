@@ -35,7 +35,7 @@ def get_extract_to() -> str:
         
         print(f"Base Directory not specified: {e}")
 
-        return None    
+        return None 
 
 def create_gitignore(cwd: str) -> None:
     """
@@ -71,6 +71,46 @@ def create_gitignore(cwd: str) -> None:
         custom_message = f"{e.__class__.__name__} {e}"
 
         print(custom_message)
+
+def create_bat_file(cwd: str) -> bool:
+    """
+    Creates a 'run.bat' file in the specified current working directory (cwd).
+    This file is typically used to run the Python application in the virtual environment.
+    Args:
+        cwd (str): The current working directory where the 'run.bat' file should be created.
+    Returns:
+        None
+    Notes:
+        - If the 'run.bat' file already exists, the function returns without making changes.
+        - If an exception occurs during file creation, it prints a custom error message.
+    """
+    
+    bat_file = os.path.join(cwd, "run.bat")
+
+    if os.path.exists(bat_file):
+        
+        print(f"run.bat file already exists in {cwd}")
+        
+        return False
+
+    try:
+        
+        with open(bat_file, "w") as f:
+            
+            f.write("@echo off\n")
+            f.write(f"call {cwd}\\.venv\\Scripts\\activate.bat\n")
+            f.write(f"python {cwd}\\<file_to_run>.py\n")  
+            f.write("deactivate\n")
+        
+        return True
+
+    except Exception as e:
+
+        custom_message = f"{e.__class__.__name__} {e}"
+
+        print(custom_message)
+
+        return False
 
 def create_env(cwd: str) -> None:
     """
@@ -135,7 +175,7 @@ def create_venv() -> None:
 
             if not os.path.isdir(cwd):
                 
-                raise FileNotFoundError(f"{cwd} is not a, existing directory")
+                raise FileNotFoundError(f"{cwd} is not an existing directory")
                 
             venv_path = os.path.join(cwd, ".venv")
 
@@ -153,6 +193,8 @@ def create_venv() -> None:
                 
                 print(f"{package.title()} already has a Virtual Environment installed.")
 
+            create_bat_file(cwd)
+            
             create_env(cwd)
 
             create_gitignore(cwd)
