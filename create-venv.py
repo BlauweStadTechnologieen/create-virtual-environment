@@ -18,9 +18,11 @@ def get_extract_to() -> str:
     
     try:
         if not EXTRACT_TO:
+            
             raise KeyError("You must define a directory where all software packages will be extracted to.")
         
         if not os.path.exists(EXTRACT_TO):
+            
             raise FileNotFoundError(f"Base Directory {EXTRACT_TO} does not exist.")
         
         return EXTRACT_TO
@@ -37,7 +39,7 @@ def get_extract_to() -> str:
 
         return None 
 
-def create_gitignore(cwd: str) -> None:
+def create_gitignore(cwd: str) -> str:
     """
     Creates a '.gitignore' file in the specified current working directory (cwd).
     This file is used to specify files and directories that should be ignored by Git.
@@ -56,7 +58,7 @@ def create_gitignore(cwd: str) -> None:
         
         print(f".gitignore file already exists in {cwd}")
         
-        return
+        return gitignore_file
 
     try:
         
@@ -64,7 +66,7 @@ def create_gitignore(cwd: str) -> None:
             
             f.write(".venv/\n__pycache__/\n*.pyc\n*.pyo\n*.pyd\n.env\nrun.BAT")
         
-        print(f".gitignore file created in {cwd}")
+        return gitignore_file
 
     except Exception as e:
 
@@ -72,7 +74,9 @@ def create_gitignore(cwd: str) -> None:
 
         print(custom_message)
 
-def create_bat_file(cwd: str) -> bool:
+        return None
+
+def create_bat_file(cwd: str) -> str:
     """
     Creates a 'run.bat' file in the specified current working directory (cwd).
     This file is typically used to run the Python application in the virtual environment.
@@ -91,7 +95,7 @@ def create_bat_file(cwd: str) -> bool:
         
         print(f"run.bat file already exists in {cwd}")
         
-        return False
+        return bat_file
 
     try:
         
@@ -102,7 +106,7 @@ def create_bat_file(cwd: str) -> bool:
             f.write(f'python "{cwd}\\<file_to_run>.py"\n')  
             f.write("deactivate\n")
         
-        return True
+        return bat_file
 
     except Exception as e:
 
@@ -110,9 +114,9 @@ def create_bat_file(cwd: str) -> bool:
 
         print(custom_message)
 
-        return False
+        return None
 
-def create_env(cwd: str) -> None:
+def create_env(cwd: str) -> str:
     """
     Creates a '.env' file in the specified current working directory (cwd).
     This file is typically used to store environment variables, not related to the Python virtual environment itself.
@@ -130,7 +134,7 @@ def create_env(cwd: str) -> None:
         
         print(f".env file already exists in {cwd}")
         
-        return
+        return env_file
 
     try:
         
@@ -146,13 +150,50 @@ def create_env(cwd: str) -> None:
 
         print(f".env file created in {cwd}")
 
+        return env_file
+
     except Exception as e:
 
         custom_message = f"{e.__class__.__name__} {e}"
 
         print(custom_message)
 
-def create_venv() -> None:
+        return None
+
+def create_venv(cwd:str, update_name:str) -> None:
+    """
+    Creates a Python virtual environment in each subdirectory of a specified base directory.
+    If a virtual environment already exists, it installs dependencies from requirements.txt if present.
+    Handles errors for missing base directory, missing subdirectories, and command failures.
+    Prints status messages for each subdirectory.
+    """
+    if not os.path.isdir(cwd):
+                
+        print(f"{cwd} is not an existing directory")
+        
+        return None
+            
+    venv_path = os.path.join(cwd, ".venv")
+
+    if not os.path.exists(venv_path):
+        
+        create_venv = run_command(["python","-m", "venv", ".venv"], cwd)
+
+        if create_venv.returncode != 0:
+            
+            print(f"Failed to create virtual environment in {cwd}. Error: {create_venv.stderr} {create_venv.returncode}")
+            
+            return None
+                                
+        return create_venv.stdout
+
+    else:
+        
+        print(f"{update_name.title()} already has a Virtual Environment installed.")
+
+        return create_env.stdout
+
+def create_files() -> None:
     
     """
     Scans all subdirectories in a specified base directory and creates a Python virtual environment (.venv)
@@ -173,52 +214,24 @@ def create_venv() -> None:
 
             cwd = os.path.join(BASE_DIR, package) 
 
-            if not os.path.isdir(cwd):
-                
-                raise FileNotFoundError(f"{cwd} is not an existing directory")
-                
-            venv_path = os.path.join(cwd, ".venv")
+            if create_venv(cwd, package) is None:
 
-            if not os.path.exists(venv_path):
+                break
+
+            if create_bat_file(cwd) is None:
                 
-                create_venv = run_command(["python","-m", "venv", ".venv"], cwd)
-
-                if create_venv.returncode != 0:
-                    
-                    raise Exception(create_venv.returncode, create_venv.stderr)
-                                
-                print(f"Virtual environment successfully installed in {package.title()}")
-
-            else:
-                
-                print(f"{package.title()} already has a Virtual Environment installed.")
-
-            create_bat_file(cwd)
+                break
             
-            create_env(cwd)
+            if create_env(cwd) is None:
+                
+                break
 
-            create_gitignore(cwd)
-            
-        return
-    
-    except KeyError as e:
-        
-        custom_message =f"Key Error in Constant {e}"
-        
-        print(custom_message)
+            if create_gitignore(cwd) is None:
+                
+                break
 
-    except FileNotFoundError as e:
-
-        custom_message = f"{e}"
-
-        print(custom_message)
-
-    except SyntaxError as e:
-        
-        custom_message = f"Syntax Error {e}"
-        
-        print(custom_message)
-
+        print("All files created successfully.")
+                
     except Exception as e:
         
         custom_message =f"Exception Error {e}"
@@ -226,4 +239,4 @@ def create_venv() -> None:
         print(custom_message)
 
 if __name__ == "__main__":
-    create_venv()
+    create_files()
