@@ -98,8 +98,8 @@ def create_bat_file(cwd: str) -> bool:
         with open(bat_file, "w") as f:
             
             f.write("@echo off\n")
-            f.write(f"call {cwd}\\.venv\\Scripts\\activate.bat\n")
-            f.write(f"python {cwd}\\<file_to_run>.py\n")  
+            f.write(f'call "{cwd}\\.venv\\Scripts\\activate.bat"\n')
+            f.write(f'python "{cwd}\\<file_to_run>.py"\n')  
             f.write("deactivate\n")
         
         return True
