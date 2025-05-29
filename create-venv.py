@@ -62,7 +62,7 @@ def create_gitignore(cwd: str) -> None:
         
         with open(gitignore_file, "w") as f:
             
-            f.write(".venv/\n__pycache__/\n*.pyc\n*.pyo\n*.pyd\n.env\n")
+            f.write(".venv/\n__pycache__/\n*.pyc\n*.pyo\n*.pyd\n.env\nrun.BAT")
         
         print(f".gitignore file created in {cwd}")
 
