@@ -21,7 +21,7 @@ def get_extract_to() -> str:
             
             raise KeyError("You must define a directory where all software packages will be extracted to.")
         
-        if not os.path.exists(EXTRACT_TO):
+        if not os.path.isdir(EXTRACT_TO):
             
             raise FileNotFoundError(f"Base Directory {EXTRACT_TO} does not exist.")
         
@@ -89,6 +89,8 @@ def create_bat_file(cwd: str) -> str:
         - If an exception occurs during file creation, it prints a custom error message.
     """
     
+    print("Creating run.bat file...")
+
     bat_file = os.path.join(cwd, "run.bat")
 
     if os.path.exists(bat_file):
@@ -128,6 +130,9 @@ def create_env(cwd: str) -> str:
         - If the '.env' file already exists, the function returns without making changes.
         - If an exception occurs during file creation, it prints a custom error message.
     """
+
+    print("Creating .env file...")
+
     env_file = os.path.join(cwd, ".env")
 
     if os.path.exists(env_file):
@@ -167,32 +172,27 @@ def create_venv(cwd:str, update_name:str) -> None:
     Handles errors for missing base directory, missing subdirectories, and command failures.
     Prints status messages for each subdirectory.
     """
-    if not os.path.isdir(cwd):
-                
-        print(f"{cwd} is not an existing directory")
-        
-        return None
+
+    print(f"Creating virtual environment in {update_name}...")
             
     venv_path = os.path.join(cwd, ".venv")
 
-    if not os.path.exists(venv_path):
-        
-        create_venv = run_command(["python","-m", "venv", ".venv"], cwd)
-
-        if create_venv.returncode != 0:
-            
-            print(f"Failed to create virtual environment in {cwd}. Error: {create_venv.stderr} {create_venv.returncode}")
-            
-            return None
-                                
-        return create_venv.stdout
-
-    else:
+    if os.path.exists(venv_path) and os.listdir(venv_path):
         
         print(f"{update_name.title()} already has a Virtual Environment installed.")
+        
+        return venv_path
 
-        return create_env.stdout
+    create_venv = run_command(["python","-m", "venv", ".venv"], cwd)
 
+    if create_venv.returncode != 0:
+        
+        print(f"Failed to create virtual environment in {cwd}. Error: {create_venv.stderr} {create_venv.returncode}")
+        
+        return None
+                            
+    return create_venv.stdout
+    
 def create_files() -> None:
     
     """
